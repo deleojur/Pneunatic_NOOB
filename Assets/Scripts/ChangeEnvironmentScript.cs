@@ -18,47 +18,49 @@ public class ChangeEnvironmentScript : MonoBehaviour
 	// Use this for initialization
     IEnumerator Start( )
     {
-        _previousEnviroment = CurrentEnvironment.Yellow;
+		_previousEnviroment = CurrentEnvironment.Yellow;
 		MoveDown();
         _currentEnvironment = CurrentEnvironment.Blue;        
         ChangeEnvironment();
         
-        while ( true )
-        {
-            InputHandling();
-            yield return null;
-        }
+		yield return new WaitForSeconds( 1 );
+       	StartCoroutine( InputHandling( ) );
     }
 
-    private void InputHandling()
+    private IEnumerator InputHandling()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ++_currentEnvironment;
-            _currentEnvironment = (CurrentEnvironment)((int)(_currentEnvironment) % 4);
-            print("current env: " + _currentEnvironment);
-        }
-        if (Input.GetKeyDown("joystick button 0"))
-        {
-            _currentEnvironment = CurrentEnvironment.Green;
-        } else if (Input.GetKeyDown("joystick button 1"))
-        {
-            _currentEnvironment = CurrentEnvironment.Red;
-        } else if (Input.GetKeyDown("joystick button 2"))
-        {
-            _currentEnvironment = CurrentEnvironment.Blue;
-        } else if (Input.GetKeyDown("joystick button 3"))
-        {
-            _currentEnvironment = CurrentEnvironment.Yellow;
-        }
-        if (_currentEnvironment != _previousEnviroment)
-        {
-            ChangeEnvironment( );
-        }
+		while ( true )
+		{
+	        if (Input.GetKeyDown(KeyCode.Space))
+	        {
+	            ++_currentEnvironment;
+	            _currentEnvironment = (CurrentEnvironment)((int)(_currentEnvironment) % 4);
+	            print("current env: " + _currentEnvironment);
+	        }
+	        if (Input.GetKeyDown("joystick button 0"))
+	        {
+	            _currentEnvironment = CurrentEnvironment.Green;
+	        } else if (Input.GetKeyDown("joystick button 1"))
+	        {
+	            _currentEnvironment = CurrentEnvironment.Red;
+	        } else if (Input.GetKeyDown("joystick button 2"))
+	        {
+	            _currentEnvironment = CurrentEnvironment.Blue;
+	        } else if (Input.GetKeyDown("joystick button 3"))
+	        {
+	            _currentEnvironment = CurrentEnvironment.Yellow;
+	        }
+	        if (_currentEnvironment != _previousEnviroment)
+	        {
+	            ChangeEnvironment( );
+				yield return new WaitForSeconds( 0.1f );
+	        }
+			yield return null;
+		}
     }  
     private void ChangeEnvironment()
     {
-        foreach(Transform t in go_platformList.transform)
+		foreach(Transform t in go_platformList.transform)
 		{
             //checks the current enviroment. If the colour matches the current colour it updates every platform with the same color
             if (_currentEnvironment == CurrentEnvironment.Blue && t.name.StartsWith("Blue"))

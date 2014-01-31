@@ -18,6 +18,7 @@ public class SpawnObject : MonoBehaviour
 	void Start( ) 
 	{
 		Physics.IgnoreLayerCollision ( 8, 8 );
+		Physics.GetIgnoreLayerCollision( 9, 10 );
 		StartCoroutine( StartSpawning( ) );
 	}
 	
