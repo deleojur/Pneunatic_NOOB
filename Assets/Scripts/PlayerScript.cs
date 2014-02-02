@@ -5,53 +5,149 @@ public class PlayerScript : MonoBehaviour
 {
 	public ParticleSystem[] moveParticleSystems;
 	public ParticleSystem[] stationarySystems;
-	public ParticleSystem[] jumpSystems;
+	public ParticleSystem 	jumpSystem;
+	public Light[]			lights;
 	
-	private TurnScript 		_turnScript;	
-	private Vector3			_previousPosition;
-	private bool 			_isMoving = false;
+	private TurnScript 			_turnScript;
+	private CharacterMotor   	_motor;
+	private Vector3				_previousPosition;
+	private bool 				_isMoving 	= false;
+	private bool 				_isJumping 	= false;
 	
 	// Use this for initialization
 	void Start( )
 	{
 		_previousPosition	= transform.position;
 		_turnScript			= gameObject.GetComponent<TurnScript>( );
-	}
+		_motor				= gameObject.GetComponent<CharacterMotor>( );
+		//jumpSystem.enableEmission	= false;
+		foreach( Light light in lights )
+		{
+			light.intensity	= 0;
+		}
+	}	
 	
 	void Update( )
 	{
-		_isMoving			= false;
+		_isMoving	= _motor.movement.velocity.x != 0;
+		
 		if ( transform.position.x > _previousPosition.x )
 		{
-			_isMoving		= true;
-			_turnScript.TurnRight( 10 );
+			_turnScript.TurnRight( 10 );		
 		}
 		else if ( transform.position.x < _previousPosition.x )
 		{
-			_isMoving		= true;
-			_turnScript.TurnLeft( 10 );
+			_turnScript.TurnLeft( 10 );			
 		}
 		_previousPosition	= transform.position;
+		foreach( Light light in lights )
+		{
+			if ( _isMoving || _motor.movement.velocity.y > 0 )
+			{
+				StopCoroutine( "ALterIntensityLight" );
+				StartCoroutine( AlterIntensityLight( light, 3, 300 ) );
+			}
+			else if ( light.intensity > 0 )
+			{
+				StopCoroutine( "ALterIntensityLight" );
+				StartCoroutine( AlterIntensityLight( light, 0, 75 ) );
+			}
+		}
 	}
 	
-	void LateUpdate( )
+	/// <summary>
+	/// Alters the intensity of the light over a period of time.
+	/// </summary>
+	/// The light that should have its intensity altered.
+	/// <param name='light'>
+	/// Light.
+	/// </param>
+	/// <param name='intensity'>
+	/// the new intensity.
+	/// </param>
+	/// <param name='t'>
+	/// the time in which the alteration should take place in seconds.
+	/// </param>
+	private IEnumerator AlterIntensityLight( Light light, float newIntensity, float t )
 	{
-		if ( _isMoving )
+		float alterationPerFrame	= ( newIntensity - light.intensity ) / t;
+		while( true )
+		{
+			if ( Mathf.Abs( newIntensity - light.intensity ) < alterationPerFrame )
+			{
+				light.intensity = newIntensity;
+				break;				
+			} else light.intensity += alterationPerFrame;
+			yield return null;
+		}
+	}
+	
+	/// <summary>
+	/// Alters the particle intensity.
+	/// </summary>
+	/// <returns>
+	/// The particle intensity.
+	/// </returns>
+	/// <param name='ps'>
+	/// Ps.
+	/// </param>
+	/// <param name='newIntensity'>
+	/// New intensity.
+	/// </param>
+	/// <param name='t'>
+	/// the time in which the alteration should take place should always be lower than the newIntensity integer.
+	/// </param>
+	private IEnumerator AlterParticleIntensity( ParticleSystem ps, int newIntensity, float t )
+	{
+		int particlesPerFrame	= ( int )( ( newIntensity - ps.particleCount ) / t );
+		particlesPerFrame		= ( int )Mathf.Max( 1, particlesPerFrame );
+		while( true )
+		{
+			if ( Mathf.Abs( newIntensity - ps.maxParticles ) < particlesPerFrame )
+			{
+				ps.maxParticles = ( int )newIntensity;
+				break;				
+			} else ps.maxParticles += ( int )particlesPerFrame;
+			yield return null;
+		}
+	}
+	
+	/*private IEnumerator PlayJumpParticles( )
+	{
+		//yield return new WaitForSeconds( 0.1f );
+		jumpSystem.enableEmission	= true;
+		yield return new WaitForSeconds( jumpSystem.startLifetime );
+		jumpSystem.enableEmission	= false;
+	}*/
+	
+	void LateUpdate( )
+	{		
+		if ( _isMoving || _motor.movement.velocity.y > 0 )
 		{
 			DisableParticleSystems( ref stationarySystems );
 			EnableParticleSystem( ref moveParticleSystems );
 		} else 
 		{
 			DisableParticleSystems( ref moveParticleSystems );
-			EnableParticleSystem( ref stationarySystems );
+			EnableParticleSystem( ref stationarySystems );			
 		}
-	}
+		if ( _motor.IsJumping( ) && !_isJumping )
+		{
+			_isJumping		= true;
+			//StartCoroutine(PlayJumpParticles( )  );
+		} else if ( _motor.IsGrounded( ) )
+		{
+			_isJumping		= false;
+		}
+	}	
 	
 	private void EnableParticleSystem( ref ParticleSystem[] particleSystems )
 	{
 		foreach ( ParticleSystem ps in particleSystems )
 		{
-			ps.enableEmission = true;
+			ps.enableEmission 	= true;
+			//StopCoroutine( "AlterParticleIntensity" );
+			//StartCoroutine( AlterParticleIntensity( ps, ( int )Mathf.Abs( _motor.movement.velocity.x * 25 ), 200 ) );
 		}
 	}
 	
@@ -60,6 +156,8 @@ public class PlayerScript : MonoBehaviour
 		foreach ( ParticleSystem ps in particleSystems )
 		{
 			ps.enableEmission = false;
+			//StopCoroutine( "AlterParticleIntensity" );
+			//StartCoroutine( AlterParticleIntensity( ps, 0, 75 ) );
 		}
 	}
 }

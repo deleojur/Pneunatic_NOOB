@@ -20,7 +20,7 @@ public class ChangeEnvironmentScript : MonoBehaviour
     {
 		_previousEnviroment = CurrentEnvironment.Yellow;
 		MoveDown();
-        _currentEnvironment = CurrentEnvironment.Blue;        
+        _currentEnvironment = CurrentEnvironment.Green;        
         ChangeEnvironment();
         
 		yield return new WaitForSeconds( 1 );
@@ -31,29 +31,23 @@ public class ChangeEnvironmentScript : MonoBehaviour
     {
 		while ( true )
 		{
-	        if (Input.GetKeyDown(KeyCode.Space))
-	        {
-	            ++_currentEnvironment;
-	            _currentEnvironment = (CurrentEnvironment)((int)(_currentEnvironment) % 4);
-	            print("current env: " + _currentEnvironment);
-	        }
-	        if (Input.GetKeyDown("joystick button 0"))
+	        if ( Input.GetKeyDown( "joystick button 0" ) || Input.GetKeyDown( KeyCode.DownArrow ) )
 	        {
 	            _currentEnvironment = CurrentEnvironment.Green;
-	        } else if (Input.GetKeyDown("joystick button 1"))
+	        } else if ( Input.GetKeyDown( "joystick button 1" ) || Input.GetKeyDown( KeyCode.RightArrow ) )
 	        {
 	            _currentEnvironment = CurrentEnvironment.Red;
-	        } else if (Input.GetKeyDown("joystick button 2"))
+	        } else if ( Input.GetKeyDown( "joystick button 2" ) || Input.GetKeyDown( KeyCode.LeftArrow ) )
 	        {
 	            _currentEnvironment = CurrentEnvironment.Blue;
-	        } else if (Input.GetKeyDown("joystick button 3"))
+	        } else if ( Input.GetKeyDown( "joystick button 3" ) || Input.GetKeyDown( KeyCode.UpArrow ) )
 	        {
 	            _currentEnvironment = CurrentEnvironment.Yellow;
 	        }
 	        if (_currentEnvironment != _previousEnviroment)
 	        {
 	            ChangeEnvironment( );
-				yield return new WaitForSeconds( 0.1f );
+				yield return new WaitForSeconds( 0.05f );
 	        }
 			yield return null;
 		}
@@ -109,7 +103,7 @@ public class ChangeEnvironmentScript : MonoBehaviour
 	{
 		for ( int i = 0; i < 25; ++i )
 		{
-			playerTransform.position += Vector3.up * 0.2f;
+			playerTransform.position += Vector3.up * 0.15f;
 			yield return null;
 		}		
 	}
