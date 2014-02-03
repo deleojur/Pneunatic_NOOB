@@ -20,10 +20,10 @@ public class ChangeEnvironmentScript : MonoBehaviour
     {
 		_previousEnviroment = CurrentEnvironment.Yellow;
 		MoveDown();
-        _currentEnvironment = CurrentEnvironment.Green;        
-        ChangeEnvironment();
+        _currentEnvironment = CurrentEnvironment.Blue;        
+        ChangeEnvironment( );
         
-		yield return new WaitForSeconds( 1 );
+		yield return new WaitForSeconds( 0.1f );
        	StartCoroutine( InputHandling( ) );
     }
 
@@ -66,7 +66,7 @@ public class ChangeEnvironmentScript : MonoBehaviour
             } else if (_currentEnvironment == CurrentEnvironment.Red && t.name.StartsWith("Red"))
             {
                 t.GetChild(0).GetComponent<PlatformHandler>().FoldOut();
-            } else if (_currentEnvironment == CurrentEnvironment.Yellow && t.name.StartsWith("Yellow"))
+            } else if (_currentEnvironment == CurrentEnvironment.Yellow && t.name.StartsWith("Orange"))
             {
                 t.GetChild(0).GetComponent<PlatformHandler>().FoldOut();
             }
@@ -84,7 +84,7 @@ public class ChangeEnvironmentScript : MonoBehaviour
             {
                 t.GetChild(0).GetComponent<PlatformHandler>().FoldIn();
             }
-            else if (_previousEnviroment == CurrentEnvironment.Yellow && t.name.StartsWith("Yellow"))
+            else if (_previousEnviroment == CurrentEnvironment.Yellow && t.name.StartsWith("Orange"))
             {
                 t.GetChild(0).GetComponent<PlatformHandler>().FoldIn();
             }
@@ -92,6 +92,7 @@ public class ChangeEnvironmentScript : MonoBehaviour
 		GameObject go			= GameObject.FindGameObjectWithTag( "Player" );
 		CharacterController cc	= go.GetComponent<CharacterController>( ) as CharacterController;
 		
+		//soundManager.playPlatformSwith( );
 		if ( cc.isGrounded )
 		{
 			StartCoroutine( HopOnPlatformChange( go.transform ) );

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlatformHandler : MonoBehaviour {
+public class PlatformHandler : MonoBehaviour 
+{
 
 	// Use this for initialization
 	public void FoldIn () 
@@ -16,4 +17,9 @@ public class PlatformHandler : MonoBehaviour {
 		transform.parent.GetComponent<BoxCollider>().enabled = true;
        // transform.position = new Vector3(transform.position.x, transform.position.y, 0);
     }
+	
+	void OnTriggerEnter( Collider other )
+	{
+		Debug.Log( "bwaas" );
+	}
 }

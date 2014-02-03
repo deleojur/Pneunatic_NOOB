@@ -17,6 +17,7 @@ public class PlayerScript : MonoBehaviour
 	// Use this for initialization
 	void Start( )
 	{
+		soundManager.playHover( );
 		_previousPosition	= transform.position;
 		_turnScript			= gameObject.GetComponent<TurnScript>( );
 		_motor				= gameObject.GetComponent<CharacterMotor>( );
@@ -26,16 +27,16 @@ public class PlayerScript : MonoBehaviour
 			light.intensity	= 0;
 		}
 	}	
-	
+		
 	void Update( )
 	{
-		_isMoving	= _motor.movement.velocity.x != 0;
+		_isMoving	=  Mathf.Abs( _motor.movement.velocity.x ) > 0.1f;
 		
-		if ( transform.position.x > _previousPosition.x )
+		if ( _isMoving && transform.position.x > _previousPosition.x )
 		{
 			_turnScript.TurnRight( 10 );		
 		}
-		else if ( transform.position.x < _previousPosition.x )
+		else if ( _isMoving && transform.position.x < _previousPosition.x )
 		{
 			_turnScript.TurnLeft( 10 );			
 		}
@@ -44,13 +45,14 @@ public class PlayerScript : MonoBehaviour
 		{
 			if ( _isMoving || _motor.movement.velocity.y > 0 )
 			{
-				StopCoroutine( "ALterIntensityLight" );
-				StartCoroutine( AlterIntensityLight( light, 3, 300 ) );
+				light.intensity += 0.067f;
+				light.intensity = Mathf.Min( light.intensity, 3 );
+				//StartCoroutine( AlterIntensityLight( light, 3, 300 ) );
 			}
 			else if ( light.intensity > 0 )
 			{
-				StopCoroutine( "ALterIntensityLight" );
-				StartCoroutine( AlterIntensityLight( light, 0, 75 ) );
+				light.intensity -= 0.07f;
+				light.intensity = Mathf.Max( light.intensity, 0 );
 			}
 		}
 	}
@@ -112,13 +114,13 @@ public class PlayerScript : MonoBehaviour
 		}
 	}
 	
-	/*private IEnumerator PlayJumpParticles( )
+	private IEnumerator PlayJumpParticles( )
 	{
 		//yield return new WaitForSeconds( 0.1f );
 		jumpSystem.enableEmission	= true;
 		yield return new WaitForSeconds( jumpSystem.startLifetime );
 		jumpSystem.enableEmission	= false;
-	}*/
+	}
 	
 	void LateUpdate( )
 	{		
@@ -134,6 +136,7 @@ public class PlayerScript : MonoBehaviour
 		if ( _motor.IsJumping( ) && !_isJumping )
 		{
 			_isJumping		= true;
+			soundManager.PlayJump( );
 			//StartCoroutine(PlayJumpParticles( )  );
 		} else if ( _motor.IsGrounded( ) )
 		{
@@ -159,5 +162,17 @@ public class PlayerScript : MonoBehaviour
 			//StopCoroutine( "AlterParticleIntensity" );
 			//StartCoroutine( AlterParticleIntensity( ps, 0, 75 ) );
 		}
+	}
+	
+	public IEnumerator PlayerDies( string levelToLoad )
+	{
+		//make sure the player will have collision with platforms when the game resets.
+		Physics.IgnoreLayerCollision( 9, 10, false );
+		GameStats.setScore( 0 );
+		_motor.canControl	= false;
+		soundManager.playplayerDies( );
+		
+		Application.LoadLevel( levelToLoad );
+		yield return new WaitForSeconds( 0 );
 	}
 }

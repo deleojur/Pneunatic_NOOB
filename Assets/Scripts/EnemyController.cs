@@ -15,8 +15,9 @@ public class EnemyController : MonoBehaviour
 	{
 		_controller				= gameObject.GetComponent<CharacterController>( );
 		_turnScript				= gameObject.GetComponent<TurnScript>( );
-		_turnScript.direction	= SpawnObject.direction;
+		_turnScript.direction	= EnemySpawner.direction;
 		_speed					= 0;
+		
 		
 		if ( _turnScript.direction == Direction.Left )
 			_turnScript.TurnAround( false );
@@ -47,8 +48,7 @@ public class EnemyController : MonoBehaviour
 	{
 		if ( other.tag == "Player" )
 		{
-			GameStats.setScore( 0 );
-			Application.LoadLevel( "Level1" );
+			StartCoroutine( ( other.gameObject.GetComponent<PlayerScript>( ) as PlayerScript ).PlayerDies( "Level1" ) );
 		}
 	}
 	

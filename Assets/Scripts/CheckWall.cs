@@ -12,7 +12,7 @@ public class CheckWall : MonoBehaviour
 	
 	void OnTriggerEnter( Collider other )
 	{	
-		if ( other.tag != "Enemy" && other.tag != "Pickup" )
+		if ( other.tag != "Enemy" && other.tag != "Pickup" && other.tag != "Platform" )
 		{
 			_controller.OnHitWall( );
 		}

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpawnObject : MonoBehaviour 
+public class EnemySpawner : MonoBehaviour 
 {
 	public GameObject   	spawnObject;
 	public GameObject		spawnIdentifier;
