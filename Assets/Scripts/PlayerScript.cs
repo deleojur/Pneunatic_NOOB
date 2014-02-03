@@ -21,7 +21,7 @@ public class PlayerScript : MonoBehaviour
 		_previousPosition	= transform.position;
 		_turnScript			= gameObject.GetComponent<TurnScript>( );
 		_motor				= gameObject.GetComponent<CharacterMotor>( );
-		//jumpSystem.enableEmission	= false;
+		
 		foreach( Light light in lights )
 		{
 			light.intensity	= 0;
